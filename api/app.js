@@ -3,11 +3,34 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var cors = require("cors");
+var cors = require('cors');
+var passport = require('passport');
+var session = require('express-session');
+var bodyParser = require('body-parser');
+
+var knex = require('knex')({
+  client: 'pg',
+  connection: {
+    host : 'localhost',
+    user : 'flyway',
+    password : '123',
+    database : 'sejdeldb'
+  }
+});
+
+
+var initPassport = require('./services/passport-config');
+
+initPassport(
+  passport,
+  
+  );
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var testAPIRouter = require('./routes/testAPI');
+var authRouter = require('./routes/auth');
+
 
 var app = express();
 
@@ -21,10 +44,21 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({
+   secret: 'your secret key',
+   resave: false,
+   saveUninitialized: true,
+   cookie: { secure: false }  // HTTPS -> true
+  }));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/testAPI', testAPIRouter);
+app.use('/auth',authRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
