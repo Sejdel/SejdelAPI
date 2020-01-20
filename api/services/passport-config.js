@@ -42,7 +42,7 @@ function initialize(passport) {
     })
 
     passport.deserializeUser((id, done) => {
-        const user = getUserById(id);
+        const user = getUserById(id);   
         return done(null, user);
     })
 }

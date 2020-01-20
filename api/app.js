@@ -8,23 +8,10 @@ var passport = require('passport');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 
-var knex = require('knex')({
-  client: 'pg',
-  connection: {
-    host : 'localhost',
-    user : 'flyway',
-    password : '123',
-    database : 'sejdeldb'
-  }
-});
-
 
 var initPassport = require('./services/passport-config');
 
-initPassport(
-  passport,
-  
-  );
+initPassport(passport);
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -37,23 +24,25 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+app.set('trust proxy', 1)
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors());
+app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 app.use(passport.initialize());
+app.use(session({
+  secret: 'your secret key',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }  // HTTPS -> true
+ }));
 app.use(passport.session());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(session({
-   secret: 'your secret key',
-   resave: false,
-   saveUninitialized: true,
-   cookie: { secure: false }  // HTTPS -> true
-  }));
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
