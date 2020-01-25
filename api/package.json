@@ -22,7 +22,8 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pg": "^7.17.1",
-    "pg-promise": "^10.3.5"
+    "pg-promise": "^10.3.5",
+    "universal-cookie": "^4.0.3"
   },
   "devDependencies": {
     "express-session": "^1.17.0",

@@ -4,7 +4,7 @@ var db = require('../services/db');
 
 
 router.get("/", function(req, res, next) {
-    db.select('*').from('users').then( data => {
+    db.select('first_name').from('users').then( data => {
       console.log(data);
       res.send(data);
     })

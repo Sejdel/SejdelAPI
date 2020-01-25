@@ -3,6 +3,7 @@ var router = express.Router();
 var bcrypt = require('bcrypt');
 var db = require('../services/db');
 var passport = require('passport');
+var Cookies = require('universal-cookie');
 
 router.post("/signin", passport.authenticate('local', { session: true}),
     function(req,res) {
@@ -12,14 +13,24 @@ router.post("/signin", passport.authenticate('local', { session: true}),
     }
 );
 
+router.post("/signout", function(req, res){
+    req.logout();
+    req.session.destroy();
+    res.clearCookie('userid');
+    res.redirect('/');
+  });
+
 
 router.post("/signup", async function(req, res, next) {
-
+    console.log(req.body);
     try {
         const hashedPasword = await bcrypt.hash(req.body.password, 10);
         db('users').insert({
             email: req.body.email,
-            password: hashedPasword
+            password: hashedPasword,
+            first_name: req.body.firstName,
+            last_name: req.body.lastName,
+            tel_number: req.body.phoneNr
         }).then( data => {
             console.log(data);
             res.sendStatus(200);
@@ -31,7 +42,7 @@ router.post("/signup", async function(req, res, next) {
     }
 });
 
-router.get("/signedin", async function(req, res, next) {
+router.get("/signedin", async function(req, res, next) {    
     try {  
         if(req.session.userId) {
             res.sendStatus(200);
