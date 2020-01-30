@@ -7,9 +7,14 @@ var Cookies = require('universal-cookie');
 
 router.post("/signin", passport.authenticate('local', { session: true}),
     function(req,res) {
-        req.session.userId = req.user.id    
-        res.cookie('userid', req.user.id, { maxAge: 2592000000 });
-        res.sendStatus(200);
+        db('users').where({id: req.user.id}).update({last_login: db.fn.now()}).then(row => {
+            db('users').where({id: req.user.id}).first().then(row => {
+                req.session.userId = req.user.id; 
+                res.cookie('name', row.first_name, { maxAge: 2592000000 }); 
+                res.cookie('userid', req.user.id, { maxAge: 2592000000 });
+                res.sendStatus(200);
+            });
+        })
     }
 );
 
