@@ -15,6 +15,7 @@ router.get('/', async function(req, res, next) {
 /* POST pour */
 router.post('/', async function(req, res, next) {
     const pour = req.body;
+    console.log(pour);
     try {
       const id = await db('pours').insert(pour, 'id');
       res.status(201).json({ id });
