@@ -15,5 +15,18 @@ router.get('/highscore', function(req, res, next) {
   }
 });
 
+/* GET hs */
+router.get('/pourfeed', function(req, res, next) {
+  try {
+    db("pour_feed").select().then(r => {
+      console.log(r);
+      res.json(r);
+    });
+  } catch(error) {
+    console.log(error);
+    res.status(500).json({ error });
+  }
+});
+
 
 module.exports = router;
