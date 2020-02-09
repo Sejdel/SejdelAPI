@@ -14,8 +14,15 @@ router.get('/', async function(req, res, next) {
 
 /* POST pour */
 router.post('/', async function(req, res, next) {   
+  const pour = req.body;
+  const auth_user = await req.user;
+
+  if(typeof(auth_user) === 'undefined'){
+    res.status(401);
+  } else {
+    pour.created_by = auth_user.id;
     try {
-      const pour = req.body;
+      console.log("d")
       kegs = await db('kegs').orderBy('id', 'desc').limit(1);
       pour.keg_id = kegs[0].id
       const id = await db('pours').insert(pour, 'id');
@@ -23,6 +30,7 @@ router.post('/', async function(req, res, next) {
     } catch(error) {
       res.status(500).json({ error });
     }
+  }
   });
 
 module.exports = router;

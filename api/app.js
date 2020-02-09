@@ -33,8 +33,8 @@ app.enable('etag')
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 app.use(passport.initialize());
 app.use(session({
@@ -43,6 +43,7 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: false }  // HTTPS -> true
  }));
+app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
