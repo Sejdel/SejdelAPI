@@ -4,6 +4,7 @@ var db = require('../services/db');
 
 /* GET pours */
 router.get('/', async function(req, res, next) {
+  console.log(req.body);
   try {
     const pours = await db('pours').where(req.body).select();
     res.status(200).json(pours);
@@ -22,12 +23,12 @@ router.post('/', async function(req, res, next) {
   } else {
     pour.created_by = auth_user.id;
     try {
-      console.log("d")
       kegs = await db('kegs').orderBy('id', 'desc').limit(1);
       pour.keg_id = kegs[0].id
       const id = await db('pours').insert(pour, 'id');
       res.status(201).json({ id });
     } catch(error) {
+      console.log(error);
       res.status(500).json({ error });
     }
   }
