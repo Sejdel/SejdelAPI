@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var db = require('../services/db');
+var {isUser, isPatron, isMod, isAdmin} = require('../services/authorize');
+
 
 /* GET hs */
-router.get('/highscore', function(req, res, next) {
+router.get('/highscore', isUser, function(req, res, next) {
   try {
     db("highscore").select().then(r => {
-      console.log(r);
       res.json(r);
     });
   } catch(error) {
@@ -15,11 +16,10 @@ router.get('/highscore', function(req, res, next) {
   }
 });
 
-/* GET hs */
-router.get('/pourfeed', function(req, res, next) {
+/* GET pf */
+router.get('/pourfeed', isUser, function(req, res, next) {
   try {
     db("pour_feed").select().then(r => {
-      console.log(r);
       res.json(r);
     });
   } catch(error) {

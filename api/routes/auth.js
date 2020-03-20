@@ -9,9 +9,12 @@ router.post("/signin", passport.authenticate('local', { session: true}),
     function(req,res) {
         db('users').where({id: req.user.id}).update({last_login: db.fn.now()}).then(row => {
             db('users').where({id: req.user.id}).first().then(row => {
-                req.session.userId = req.user.id; 
+                req.session.userId = req.user.id;
+                req.session.role = req.user.user_role;
+                console.log(req.user.user_role);
                 res.cookie('name', row.first_name, { maxAge: 2592000000 }); 
                 res.cookie('userid', req.user.id, { maxAge: 2592000000 });
+                res.cookie('role', req.user.user_role, { maxAge: 2592000000 })
                 res.sendStatus(200);
             });
         })
@@ -20,14 +23,16 @@ router.post("/signin", passport.authenticate('local', { session: true}),
 
 router.post("/signout", function(req, res){
     req.logout();
+    req.logOut();
     req.session.destroy();
     res.clearCookie('userid');
+    res.clearCookie('name')
+    res.clearCookie('role')
     res.redirect('/');
   });
 
 
 router.post("/signup", async function(req, res, next) {
-    console.log(req.body);
     try {
         const hashedPasword = await bcrypt.hash(req.body.password, 10);
         db('users').insert({
@@ -52,6 +57,9 @@ router.get("/signedin", async function(req, res, next) {
         if(req.session.userId) {
             res.sendStatus(200);
         } else {
+            res.clearCookie('userid');
+            res.clearCookie('name')
+            res.clearCookie('role')
             res.sendStatus(401);
         }     
     } catch (e) {
