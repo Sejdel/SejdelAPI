@@ -1,11 +1,8 @@
+const config = require('../config')
+
 const knex = require('knex')({
   client: 'pg',
-  connection: {
-    host : 'localhost',
-    user : 'flyway',
-    password : '123',
-    database : 'sejdeldb'
-  }
+  connection: config.pg.connStr
 });
 
 module.exports = knex;
